@@ -1,0 +1,62 @@
+{{define "index"}}
+<!DOCTYPE html>
+<html>
+    <head>
+        {{template "_header"}}
+    </head>
+    <body>
+        {{template "_message"}}
+
+        <!-- BEGIN PAGE CONTAINER-->
+        <div class="page-content">
+            <div class="content">
+                <!-- BEGIN PAGE TITLE -->
+                <div class="page-title" style="text-align: right;">
+                    <h3>Welcome {{.name}}</h3>
+                    
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="grid simple">
+                            <div class="grid-title no-border">
+                                <h4>List of USERS</h4>
+                            </div>
+                            <div class="grid-body no-border">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Username / email</th>
+                                            <th>First Name</th>
+                                            <th>Last_Name</th>
+                                            <th>Password</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{range $index, $elem := .data}}
+                                        <tr>
+                                            <td>{{$elem.ID}}</td>
+                                            <td>{{$elem.Username}}</td>
+                                            <td>{{$elem.FirstName}}</td>
+                                            <td>{{$elem.LastName}}</td>
+                                            <td>{{$elem.Password}}</td>
+                                        </tr>
+                                        {{end}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END PAGE TITLE -->
+                <!-- BEGIN PlACE PAGE CONTENT HERE -->
+
+                <!-- END PLACE PAGE CONTENT HERE -->
+            </div>
+        </div>
+
+        <!-- END PAGE CONTAINER -->
+        {{template "_footer"}}
+    </body>
+</html>
+{{end}}

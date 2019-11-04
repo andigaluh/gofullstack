@@ -1,0 +1,156 @@
+{{define "_message"}}
+<!-- BEGIN HEADER -->
+<div class="header navbar navbar-inverse">
+    <!-- BEGIN TOP NAVIGATION BAR -->
+    <div class="navbar-inner">
+        <!-- BEGIN NAVIGATION HEADER -->
+        <div class="header-seperation">
+            <!-- BEGIN MOBILE HEADER -->
+            <ul class="nav pull-left notifcation-center" id="main-menu-toggle-wrapper" style="display:none">
+                <li class="dropdown">
+                    <a id="main-menu-toggle" href="#main-menu" class="">
+                        <div class="iconset top-menu-toggle-white"></div>
+                    </a>
+                </li>
+            </ul>
+            <!-- END MOBILE HEADER -->
+            <!-- BEGIN LOGO -->
+            <a href="/">
+                <img src="static/img/logo.png" class="logo" alt="" data-src="static/img/logo.png"
+                    data-src-retina="static/img/logo2x.png" width="106" height="21" />
+            </a>
+            <!-- END LOGO -->
+            <!-- BEGIN LOGO NAV BUTTONS -->
+            <ul class="nav pull-right notifcation-center">
+                <li class="dropdown" id="header_task_bar">
+                    <a href="/" class="dropdown-toggle active" data-toggle="">
+                        <div class="iconset top-home"></div>
+                    </a>
+                </li>
+                <!-- BEGIN MOBILE CHAT TOGGLER -->
+                <li class="dropdown" id="portrait-chat-toggler" style="display:none">
+                    <a href="#sidr" class="chat-menu-toggle">
+                        <div class="iconset top-chat-white"></div>
+                    </a>
+                </li>
+                <!-- END MOBILE CHAT TOGGLER -->
+            </ul>
+            <!-- END LOGO NAV BUTTONS -->
+        </div>
+        <!-- END NAVIGATION HEADER -->
+        <!-- BEGIN CONTENT HEADER -->
+        <div class="header-quick-nav">
+            <!-- BEGIN HEADER LEFT SIDE SECTION -->
+            <div class="pull-left">
+                <!-- BEGIN SLIM NAVIGATION TOGGLE -->
+                <ul class="nav quick-section">
+                    <li class="quicklinks">
+                        <a href="#" class="" id="layout-condensed-toggle">
+                            <div class="iconset top-menu-toggle-dark"></div>
+                        </a>
+                    </li>
+                </ul>
+                <!-- END SLIM NAVIGATION TOGGLE -->
+                
+            </div>
+            <!-- END HEADER LEFT SIDE SECTION -->
+            
+        </div>
+        <!-- END CONTENT HEADER -->
+    </div>
+    <!-- END TOP NAVIGATION BAR -->
+</div>
+<!-- END HEADER -->
+
+<!-- BEGIN CONTENT -->
+<div class="page-container row-fluid">
+    <!-- BEGIN SIDEBAR -->
+    <!-- BEGIN MENU -->
+    <div class="page-sidebar" id="main-menu">
+        <div class="page-sidebar-wrapper scrollbar-dynamic" id="main-menu-wrapper">
+            
+            <!-- BEGIN SIDEBAR MENU -->
+            <p class="menu-title">BROWSE<span class="pull-right"><a href="javascript:;"><i
+                            class="fa fa-refresh"></i></a></span></p>
+            <ul>
+                <!-- BEGIN SELECTED LINK -->
+                <li class="start active">
+                    <a href="#">
+                        <i class="icon-custom-home"></i>
+                        <span class="title">Dashboard</span>
+                        <span class="selected"></span>
+                    </a>
+                </li>
+                <!-- END SELECTED LINK -->
+                <!-- BEGIN BADGE LINK -->
+                <li class="">
+                    <a href="#">
+                        <i class="fa fa-envelope"></i>
+                        <span class="title">Link 1</span>
+                    </a>
+                </li>
+                <!-- END BADGE LINK -->
+                <!-- BEGIN SINGLE LINK -->
+                <li class="">
+                    <a href="#">
+                        <i class="fa fa-flag"></i>
+                        <span class="title">Link 2</span>
+                    </a>
+                </li>
+                <!-- END SINGLE LINK -->
+                <!-- BEGIN ONE LEVEL MENU -->
+                <li class="">
+                    <a href="javascript:;">
+                        <i class="icon-custom-ui"></i>
+                        <span class="title">Link 3</span>
+                        <span class="arrow"></span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="#">Sub Link 1</a></li>
+                    </ul>
+                </li>
+                <!-- END ONE LEVEL MENU -->
+                <!-- BEGIN TWO LEVEL MENU -->
+                <li class="">
+                    <a href="javascript:;">
+                        <i class="fa fa-folder-open"></i>
+                        <span class="title">Link 4</span>
+                        <span class="arrow"></span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="javascript:;">Sub Link 1</a></li>
+                        <li>
+                            <a href="javascript:;"><span class="title">Sub Link 2</span><span class="arrow "></span></a>
+                            <ul class="sub-menu">
+                                <li><a href="javascript:;">Sub Link 1</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <!-- END TWO LEVEL MENU -->
+            </ul>
+            <!-- END SIDEBAR MENU -->
+            
+            
+        </div>
+    </div>
+    <!-- BEGIN SCROLL UP HOVER -->
+    <a href="#" class="scrollup">Scroll</a>
+    <!-- END SCROLL UP HOVER -->
+    <!-- END MENU -->
+    <!-- BEGIN SIDEBAR FOOTER WIDGET -->
+    <div class="footer-widget">
+        <div class="progress transparent progress-small no-radius no-margin">
+            <div data-percentage="100%" class="progress-bar progress-bar-success animate-progress-bar"></div>
+        </div>
+        <div class="pull-right">
+            <div class="details-status">
+                <span data-animation-duration="600" data-value="100" class="animate-number"></span>%
+            </div>
+            <a href="/logout"><i class="fa fa-power-off"></i></a>
+        </div>
+    </div>
+    <!-- END SIDEBAR FOOTER WIDGET -->
+    <!-- END SIDEBAR -->
+    
+{{end}}
