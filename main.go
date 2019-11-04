@@ -28,6 +28,17 @@ type user struct {
 
 type M map[string]interface{}
 
+func main() {
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("assets"))))
+
+	connect_db()
+	routes()
+	defer db.Close()
+
+	fmt.Println("Server running on port :3000")
+	http.ListenAndServe(":3000", nil)
+}
+
 func connect_db() {
 	err = godotenv.Load()
 	if err != nil {
@@ -102,8 +113,6 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var data = M{"title": "Learning web Go", "name": session.GetString("username"), "data": arr_user}
-
-	//var data = M{"title": "Learning web Go", "name": session.GetString("username")}
 
 	var tmpl = template.Must(template.ParseFiles(
 		"views/index.html",
@@ -196,15 +205,4 @@ func checkErr(w http.ResponseWriter, r *http.Request, err error) bool {
 	}
 
 	return true
-}
-
-func main() {
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("assets"))))
-
-	connect_db()
-	routes()
-	defer db.Close()
-
-	fmt.Println("Server running on port :3000")
-	http.ListenAndServe(":3000", nil)
 }
