@@ -1,0 +1,74 @@
+{{define "edit"}}
+<!DOCTYPE html>
+<html>
+
+<head>
+    {{template "_header"}}
+</head>
+
+<body>
+    {{template "_message"}}
+
+    <!-- BEGIN PAGE CONTAINER-->
+    <div class="page-content">
+        <div class="content">
+            <!-- BEGIN PAGE TITLE -->
+            <div class="page-title" style="text-align: right;">
+                <h3>Welcome {{.name}}</h3>
+
+
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="grid simple">
+                        <div class="grid-title no-border">
+                            <h4>EDIT USER</h4>
+                        </div>
+                        <div class="grid-body no-border">
+                           
+                           <form id="frm_edit" class="" method="POST">
+                               <input type="hidden" name="uid" value="{{.data.ID}}">
+                               <div class="row form-row xs-m-l-10 xs-m-r-10">
+                                   <div class="col-md-6 col-sm-6">
+                                       <input name="email" id="reg_username" type="text" class="form-control"
+                                           placeholder="Email" value="{{.data.Username}}" required>
+                                   </div>
+                                   <div class="col-md-6 col-sm-6">
+                                       <input name="password" id="reg_pass" type="password" class="form-control"
+                                           placeholder="Password">
+                                   </div>
+                               </div>
+
+                               <div class="row form-row xs-m-l-10 xs-m-r-10">
+                                   <div class="col-md-6 col-sm-6">
+                                       <input name="first_name" id="reg_first_Name" type="text" class="form-control"
+                                           placeholder="First Name" value="{{.data.FirstName}}" required>
+                                   </div>
+                                   <div class="col-md-6 col-sm-6">
+                                       <input name="last_name" id="reg_first_Name" type="text" class="form-control"
+                                           placeholder="Last Name" value="{{.data.LastName}}" required>
+                                   </div>
+                               </div>
+                               <div class="row p-t-10 xs-m-l-10 xs-m-r-10 ">
+                                   <div class="control-group  col-md-10">
+                                       <button type="submit" class="btn btn-warning btn-cons">Submit</button>
+                                   </div>
+                               </div>
+                           </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END PAGE TITLE -->
+            <!-- BEGIN PlACE PAGE CONTENT HERE -->
+
+            <!-- END PLACE PAGE CONTENT HERE -->
+        </div>
+    </div>
+
+    <!-- END PAGE CONTAINER -->
+    {{template "_footer"}}
+</body>
+
+</html>
+{{end}}

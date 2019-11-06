@@ -24,6 +24,7 @@ type user struct {
 	FirstName string
 	LastName  string
 	Password  string
+	Group_id  string
 }
 
 type M map[string]interface{}
@@ -31,15 +32,15 @@ type M map[string]interface{}
 func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("assets"))))
 
-	connect_db()
+	connectdb()
 	routes()
 	defer db.Close()
 
-	fmt.Println("Server running on port :3000")
-	http.ListenAndServe(":3000", nil)
+	fmt.Println("Server running on port :4000")
+	http.ListenAndServe(":4000", nil)
 }
 
-func connect_db() {
+func connectdb() {
 	err = godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error getting env, not comming through %v", err)
@@ -66,6 +67,8 @@ func routes() {
 	http.HandleFunc("/register", register)
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/logout", logout)
+	http.HandleFunc("/edit", edit)
+	http.HandleFunc("/delete", Delete)
 }
 
 func QueryUser(username string) user {
@@ -75,7 +78,8 @@ func QueryUser(username string) user {
 		username, 
 		first_name, 
 		last_name, 
-		password 
+		password, 
+		group_id
 		FROM users WHERE username=?
 		`, username).
 		Scan(
@@ -84,6 +88,7 @@ func QueryUser(username string) user {
 			&users.FirstName,
 			&users.LastName,
 			&users.Password,
+			&users.Group_id,
 		)
 	return users
 }
@@ -96,23 +101,45 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var users user
-	var arr_user []user
+	var arruser []user
+	groupID := session.GetString("group_id")
 
-	rows, errordb := db.Query("Select id,username,first_name,last_name,password from users")
-	if errordb != nil {
-		log.Print(errordb)
-	}
-
-	for rows.Next() {
-		if errrows := rows.Scan(&users.ID, &users.Username, &users.FirstName, &users.LastName, &users.Password); errrows != nil {
-			log.Fatal(errrows.Error())
-
-		} else {
-			arr_user = append(arr_user, users)
+	if groupID == "1" {
+		rows, errordb := db.Query("Select id,username,first_name,last_name,password, group_id from users")
+		if errordb != nil {
+			log.Print(errordb)
 		}
+
+		for rows.Next() {
+			if errrows := rows.Scan(&users.ID, &users.Username, &users.FirstName, &users.LastName, &users.Password, &users.Group_id); errrows != nil {
+				log.Fatal(errrows.Error())
+
+			} else {
+				arruser = append(arruser, users)
+			}
+		}
+	} else {
+		err = db.QueryRow(`
+			SELECT id, 
+			username, 
+			first_name, 
+			last_name, 
+			password, 
+			group_id
+			FROM users WHERE group_id=?
+			`, groupID).
+			Scan(
+				&users.ID,
+				&users.Username,
+				&users.FirstName,
+				&users.LastName,
+				&users.Password,
+				&users.Group_id,
+			)
+		arruser = append(arruser, users)
 	}
 
-	var data = M{"title": "Learning web Go", "name": session.GetString("username"), "data": arr_user}
+	var data = M{"title": "Learning web Go", "name": session.GetString("username"), "data": arruser}
 
 	var tmpl = template.Must(template.ParseFiles(
 		"views/index.html",
@@ -142,12 +169,14 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	users := QueryUser(username)
 
-	var password_tes = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(password))
+	var passwordtes = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(password))
 
-	if password_tes == nil {
+	if passwordtes == nil {
 		session := sessions.Start(w, r)
 		session.Set("username", users.Username)
 		session.Set("name", users.FirstName)
+		session.Set("group_id", users.Group_id)
+		session.Set("id", users.ID)
 		http.Redirect(w, r, "/", 302)
 	} else {
 		http.Redirect(w, r, "/login", 302)
@@ -161,8 +190,8 @@ func register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	username := r.FormValue("email")
-	first_name := r.FormValue("first_name")
-	last_name := r.FormValue("last_name")
+	firstname := r.FormValue("first_name")
+	lastname := r.FormValue("last_name")
 	password := r.FormValue("password")
 
 	users := QueryUser(username)
@@ -171,9 +200,9 @@ func register(w http.ResponseWriter, r *http.Request) {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 		if len(hashedPassword) != 0 && checkErr(w, r, err) {
-			stmt, err := db.Prepare("INSERT INTO users SET username=?, password=?, first_name=?, last_name=?")
+			stmt, err := db.Prepare("INSERT INTO users SET username=?, password=?, firstname=?, lastname=?")
 			if err == nil {
-				_, err := stmt.Exec(&username, &hashedPassword, &first_name, &last_name)
+				_, err := stmt.Exec(&username, &hashedPassword, &firstname, &lastname)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
@@ -205,4 +234,88 @@ func checkErr(w http.ResponseWriter, r *http.Request, err error) bool {
 	}
 
 	return true
+}
+
+func edit(w http.ResponseWriter, r *http.Request) {
+	session := sessions.Start(w, r)
+	if len(session.GetString("username")) == 0 {
+		http.Redirect(w, r, "/login", 301)
+	}
+
+	if r.Method != "POST" {
+
+		nID := r.URL.Query().Get("id")
+		selDB, errselDB := db.Query("SELECT * FROM users WHERE id=?", nID)
+		if errselDB != nil {
+			panic(errselDB.Error())
+		}
+		users := user{}
+		for selDB.Next() {
+			var id int
+			var username, firstname, lastname, password, group_id string
+			errdbscan := selDB.Scan(&id, &username, &firstname, &lastname, &password, &group_id)
+			if errdbscan != nil {
+				panic(errdbscan.Error())
+			}
+			users.ID = id
+			users.Username = username
+			users.FirstName = firstname
+			users.LastName = lastname
+			users.Password = password
+			users.Group_id = group_id
+		}
+
+		var data = M{"title": "Learning web Go", "name": session.GetString("username"), "data": users}
+
+		var tmpl = template.Must(template.ParseFiles(
+			"views/edit.html",
+			"views/_header.html",
+			"views/_message.html",
+			"views/_footer.html",
+		))
+
+		var err = tmpl.ExecuteTemplate(w, "edit", data)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	username := r.FormValue("email")
+	password := r.FormValue("password")
+	firstname := r.FormValue("first_name")
+	lastname := r.FormValue("last_name")
+	id := r.FormValue("uid")
+
+	if len(password) > 0 {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		insForm, errupd := db.Prepare("UPDATE users SET username=?, password=?, first_name=?, last_name=? WHERE id=?")
+		if errupd != nil {
+			panic(errupd.Error())
+		}
+		insForm.Exec(username, hashedPassword, firstname, lastname, id)
+		log.Println("UPDATE: Username: " + username + " | password: " + password + " | first_name: " + firstname + " | last_name: " + lastname)
+	} else {
+		insForm, errupd := db.Prepare("UPDATE users SET username=?, first_name=?, last_name=? WHERE id=?")
+		if errupd != nil {
+			panic(errupd.Error())
+		}
+		insForm.Exec(username, firstname, lastname, id)
+		log.Println("UPDATE: Username: " + username + " | first_name: " + firstname + " | last_name: " + lastname)
+	}
+
+	http.Redirect(w, r, "/", 301)
+
+}
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+	emp := r.URL.Query().Get("id")
+	delForm, err := db.Prepare("DELETE FROM users WHERE id=?")
+	if err != nil {
+		panic(err.Error())
+	}
+	delForm.Exec(emp)
+	log.Println("DELETE")
+	http.Redirect(w, r, "/", 301)
 }
